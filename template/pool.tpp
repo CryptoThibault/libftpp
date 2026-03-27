@@ -3,8 +3,9 @@
 template <typename TType>
 void Pool<TType>::resize(const size_t& numberOfObjectStored)
 {
+    objects.reserve(numberOfObjectStored);
     for (size_t i = 0; i < numberOfObjectStored; ++i)
-        objects.push_back(Object());
+        objects.emplace_back();
 }
 
 template <typename TType>
@@ -27,7 +28,6 @@ Pool<TType>::Object::~Object() noexcept
 {
     if(ptr)
     {
-        delete ptr;
         ptr = nullptr;
         inUse = false;
     }

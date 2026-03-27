@@ -20,12 +20,13 @@ public:
 
         TType* operator->() noexcept;
 
-        template<typename... TArgs>
-        void allocate(TArgs&&... args);
-
     private:
         TType* ptr = nullptr;
         bool inUse = false;
+
+        template<typename ... TArgs>
+        void allocate(TArgs&& ... args);
+
         friend class Pool<TType>;
     };
 

@@ -8,7 +8,7 @@ SRC_DIR = src
 OBJ_DIR = obj
 INC_DIR = include
 TEMP_DIR = template
-TEST_DIR = tests
+TEST_DIR = test
 
 SRC = $(wildcard $(SRC_DIR)/*.cpp)
 OBJ = $(patsubst $(SRC_DIR)/%.cpp, $(OBJ_DIR)/%.o, $(SRC))
@@ -19,7 +19,9 @@ TEST_BIN = $(patsubst $(TEST_DIR)/%.cpp, $(TEST_DIR)/%, $(TEST_SRC))
 
 RED = \033[0;31m
 GREEN = \033[0;32m
-YELLOW = \033[0;33m
+BROWN = \033[0;33m
+BLUE = \033[0;34m
+GRAY = \033[0;90m
 RESET = \033[0m
 
 all: $(NAME)
@@ -34,9 +36,10 @@ $(OBJ_DIR)/%.o: $(SRC_DIR)/%.cpp $(DEP)
 $(TEST_DIR)/%: $(TEST_DIR)/%.cpp $(NAME)
 	$(CXX) $(CXXFLAGS) $< $(NAME) -o $@
 
-test:
+test: $(NAME)
 	@for src in $(TEST_SRC); do \
 		bin="$(TEST_DIR)/$$(basename $$src .cpp)"; \
+		bin_name="$$(basename $$bin)"; \
 		needed=0; \
 		for h in $$(grep -o '#include "[^"]*\.hpp"' "$$src" | sed -e 's/#include "//' -e 's/"$$//'); do \
 			if [ -z "$$h" ]; then continue; fi; \
@@ -45,17 +48,21 @@ test:
 			elif [ -f "$(INC_DIR)/libftpp.hpp" ] && grep -qF "$$h" "$(INC_DIR)/libftpp.hpp"; then \
 				needed=1; \
 			else \
-				echo "$(RED)[libftpp] skip $$bin (missing header $$h)$(RESET)"; \
+				echo "$(GRAY)[libftpp] skip $$bin_name (missing header $$h)$(RESET)"; \
 				needed=2; break; \
 			fi; \
 		done; \
 		if [ $$needed -eq 2 ]; then echo; continue; fi; \
-		echo "$(YELLOW)[libftpp] build $$bin$(RESET)"; \
+		echo "$(BLUE)[libftpp] build $$bin_name$(RESET)"; \
 		if $(CXX) $(CXXFLAGS) "$$src" $(NAME) -o "$$bin"; then \
-			echo "$(GREEN)[libftpp] run $$bin$(RESET)"; \
-			"$$bin"; \
+			echo "$(BROWN)[libftpp] run $$bin_name$(RESET)"; \
+			if "$$bin"; then \
+				echo "$(GREEN)[libftpp] test $$bin_name passed$(RESET)"; \
+			else \
+				echo "$(RED)[libftpp] test $$bin_name failed$(RESET)"; \
+			fi; \
 		else \
-			echo "$(RED)[libftpp] skip $$bin (build failed)$(RESET)"; \
+			echo "$(RED)[libftpp] skip $$bin_name (build failed)$(RESET)"; \
 		fi; \
 		echo; \
 	done

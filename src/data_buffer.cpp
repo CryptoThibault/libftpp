@@ -1,22 +1,12 @@
 #include "data_buffer.hpp"
-#include <cstring>
-#include <stdexcept>
 
-template <typename T>
-DataBuffer& DataBuffer::operator<<(const T& value)
+void DataBuffer::clear()
 {
-    const std::byte* raw = reinterpret_cast<const std::byte*>(&value);
-    data.insert(data.end(), raw, raw + sizeof(T));
-    return *this;
+    data.clear();
+    readPos = 0;
 }
 
-template <typename T>
-DataBuffer& DataBuffer::operator>>(T& value)
+size_t DataBuffer::size() const
 {
-    if (readPos + sizeof(T) > data.size())
-        throw std::out_of_range("Trying to read past buffer");
-
-    std::memcpy(&value, data.data() + readPos, sizeof(T));
-    readPos += sizeof(T);
-    return *this;
+    return data.size();
 }
