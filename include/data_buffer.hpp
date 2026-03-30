@@ -3,6 +3,7 @@
 #include <vector>
 #include <string>
 #include <cstddef>
+#include <stdexcept>
 
 class DataBuffer
 {

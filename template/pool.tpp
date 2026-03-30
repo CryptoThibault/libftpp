@@ -24,7 +24,7 @@ typename Pool<TType>::Object& Pool<TType>::acquire(TArgs&& ... p_args)
 }
 
 template <typename TType>
-Pool<TType>::Object::~Object() noexcept
+Pool<TType>::Object::~Object()
 {
     if(ptr)
     {
@@ -34,7 +34,7 @@ Pool<TType>::Object::~Object() noexcept
 }
 
 template <typename TType>
-TType* Pool<TType>::Object::operator->() noexcept
+TType* Pool<TType>::Object::operator->()
 {
     return ptr;
 }

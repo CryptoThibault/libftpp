@@ -16,9 +16,9 @@ public:
     class Object
     {
     public:
-        ~Object() noexcept;
+        ~Object();
 
-        TType* operator->() noexcept;
+        TType* operator->();
 
     private:
         TType* ptr = nullptr;
