@@ -16,6 +16,7 @@ DEP = $(wildcard $(INC_DIR)/*.hpp) $(wildcard $(TEMP_DIR)/*.tpp)
 
 TEST_SRC = $(wildcard $(TEST_DIR)/main_*.cpp)
 TEST_BIN = $(patsubst $(TEST_DIR)/%.cpp, $(TEST_DIR)/%, $(TEST_SRC))
+VERBOSE ?= 0
 
 RED = \033[0;31m
 GREEN = \033[0;32m
@@ -35,6 +36,22 @@ $(OBJ_DIR)/%.o: $(SRC_DIR)/%.cpp $(DEP)
 
 $(TEST_DIR)/%: $(TEST_DIR)/%.cpp $(NAME)
 	$(CXX) $(CXXFLAGS) $< $(NAME) -o $@
+
+run:
+	@name=$(filter-out $@,$(MAKECMDGOALS)); \
+	if [ -z "$$name" ]; then \
+		echo "Usage: make run <test_name>"; \
+		exit 1; \
+	fi; \
+	src="$(TEST_DIR)/main_$$name.cpp"; \
+	bin="$(TEST_DIR)/main_$$name"; \
+	if [ ! -f "$$src" ]; then \
+		echo "Test $$src not found"; \
+		exit 1; \
+	fi; \
+	$(CXX) $(CXXFLAGS) "$$src" $(NAME) -o "$$bin" && "$$bin" \
+	"$$bin"; \
+	rm -f "$$bin"
 
 test: $(NAME)
 	@for src in $(TEST_SRC); do \
@@ -56,7 +73,12 @@ test: $(NAME)
 		echo "$(BLUE)[libftpp] build $$bin_name$(RESET)"; \
 		if $(CXX) $(CXXFLAGS) "$$src" $(NAME) -o "$$bin"; then \
 			echo "$(BROWN)[libftpp] run $$bin_name$(RESET)"; \
-			if "$$bin"; then \
+			if [ "$(VERBOSE)" -eq 1 ]; then \
+				"$$bin"; \
+			else \
+				"$$bin" > /dev/null 2>&1; \
+			fi; \
+			if [ $$? -eq 0 ]; then \
 				echo "$(GREEN)[libftpp] test $$bin_name passed$(RESET)"; \
 			else \
 				echo "$(RED)[libftpp] test $$bin_name failed$(RESET)"; \
@@ -76,4 +98,7 @@ fclean: clean
 
 re: fclean all
 
-.PHONY: all test clean fclean re
+%:
+	@:
+
+.PHONY: all run test clean fclean re
