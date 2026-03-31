@@ -17,9 +17,8 @@ ThreadSafeIOStream& ThreadSafeIOStream::operator<<(std::ostream& (*manip)(std::o
         _prefixAdded = false;
     }
     else
-    {
         _oss << manip;
-    }
+
     return *this;
 }
 

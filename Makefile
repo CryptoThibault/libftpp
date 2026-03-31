@@ -37,7 +37,7 @@ $(OBJ_DIR)/%.o: $(SRC_DIR)/%.cpp $(DEP)
 $(TEST_DIR)/%: $(TEST_DIR)/%.cpp $(NAME)
 	$(CXX) $(CXXFLAGS) $< $(NAME) -o $@
 
-run:
+run: $(NAME)
 	@name=$(filter-out $@,$(MAKECMDGOALS)); \
 	if [ -z "$$name" ]; then \
 		echo "Usage: make run <test_name>"; \

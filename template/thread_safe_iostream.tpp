@@ -10,7 +10,6 @@ ThreadSafeIOStream& ThreadSafeIOStream::operator<<(const T& value)
     _oss << value;
 
     if constexpr (std::is_same_v<T, std::string>)
-    {
         if (!value.empty() && value.back() == '\n')
         {
             std::lock_guard<std::mutex> lock(_mutex);
@@ -19,7 +18,6 @@ ThreadSafeIOStream& ThreadSafeIOStream::operator<<(const T& value)
             _oss.clear();
             _prefixAdded = false;
         }
-    }
 
     return *this;
 }
