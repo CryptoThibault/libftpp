@@ -20,10 +20,11 @@ public:
 
     void clear();
     size_t size() const;
+    const std::byte* data() const;
 
 private:
-    std::vector<std::byte> data;
-    size_t readPos = 0;
+    std::vector<std::byte> _data;
+    size_t _readPos = 0;
 };
 
 #include "data_buffer.tpp"

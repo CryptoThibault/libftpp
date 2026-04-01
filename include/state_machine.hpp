@@ -17,11 +17,11 @@ public:
     void update();
 
 private:
-    TState currentState;
+    TState _currentState;
 
-    std::unordered_set<TState> states;
-    std::unordered_map<TState, std::pair<TState, std::function<void()>>> transitions;
-    std::unordered_map<TState, std::function<void()>> actions;
+    std::unordered_set<TState> _states;
+    std::unordered_map<TState, std::pair<TState, std::function<void()>>> _transitions;
+    std::unordered_map<TState, std::function<void()>> _actions;
 };
 
 #include "state_machine.tpp"

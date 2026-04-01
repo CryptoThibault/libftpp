@@ -5,7 +5,7 @@ template <typename T>
 DataBuffer& DataBuffer::operator<<(const T& value)
 {
     const std::byte* raw = reinterpret_cast<const std::byte*>(&value);
-    data.insert(data.end(), raw, raw + sizeof(T));
+    _data.insert(_data.end(), raw, raw + sizeof(T));
 
     return *this;
 }
@@ -13,11 +13,11 @@ DataBuffer& DataBuffer::operator<<(const T& value)
 template <typename T>
 DataBuffer& DataBuffer::operator>>(T& value)
 {
-    if (readPos + sizeof(T) > data.size())
+    if (_readPos + sizeof(T) > _data.size())
         throw std::out_of_range("Buffer underflow");
 
-    std::memcpy(&value, data.data() + readPos, sizeof(T));
-    readPos += sizeof(T);
+    std::memcpy(&value, _data.data() + _readPos, sizeof(T));
+    _readPos += sizeof(T);
 
     return *this;
 }

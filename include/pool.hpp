@@ -21,8 +21,8 @@ public:
         TType* operator->();
 
     private:
-        TType* ptr = nullptr;
-        bool inUse = false;
+        TType* _ptr = nullptr;
+        bool _inUse = false;
 
         template<typename ... TArgs>
         void allocate(TArgs&& ... args);
@@ -31,7 +31,7 @@ public:
     };
 
 private:
-    std::vector<Object> objects;
+    std::vector<Object> _objects;
 };
 
 #include "pool.tpp"

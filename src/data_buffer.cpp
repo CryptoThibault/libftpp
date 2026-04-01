@@ -2,13 +2,18 @@
 
 void DataBuffer::clear()
 {
-    data.clear();
-    readPos = 0;
+    _data.clear();
+    _readPos = 0;
 }
 
 size_t DataBuffer::size() const
 {
-    return data.size();
+    return _data.size();
+}
+
+const std::byte* DataBuffer::data() const
+{
+    return _data.data();
 }
 
 DataBuffer& DataBuffer::operator<<(const std::string& str)
@@ -17,7 +22,7 @@ DataBuffer& DataBuffer::operator<<(const std::string& str)
     *this << size;
 
     const std::byte* ptr = reinterpret_cast<const std::byte*>(str.data());
-    data.insert(data.end(), ptr, ptr + size);
+    _data.insert(_data.end(), ptr, ptr + size);
 
     return *this;
 }
@@ -27,11 +32,11 @@ DataBuffer& DataBuffer::operator>>(std::string& str)
     size_t size;
     *this >> size;
 
-    if (readPos + size > data.size())
+    if (_readPos + size > _data.size())
         throw std::out_of_range("Buffer underflow");
 
-    str.assign(reinterpret_cast<char*>(data.data() + readPos), size);
-    readPos += size;
+    str.assign(reinterpret_cast<char*>(_data.data() + _readPos), size);
+    _readPos += size;
 
     return *this;
 }

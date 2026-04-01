@@ -5,12 +5,6 @@
 template <typename TType>
 class Singleton
 {
-private:
-    static TType* _instance;
-
-    Singleton() = delete;
-    ~Singleton() = delete;
-
 public:
     static TType* instance()
     {
@@ -26,6 +20,12 @@ public:
             throw std::runtime_error("Instance already exists.");
         _instance = new TType(std::forward<TArgs>(p_args)...);
     }
+
+private:
+    static TType* _instance;
+
+    Singleton() = delete;
+    ~Singleton() = delete;
 };
 
 template <typename TType>
