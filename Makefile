@@ -15,6 +15,7 @@ OBJ = $(patsubst $(SRC_DIR)/%.cpp, $(OBJ_DIR)/%.o, $(SRC))
 DEP = $(wildcard $(INC_DIR)/*.hpp) $(wildcard $(TEMP_DIR)/*.tpp)
 
 TEST_SRC = $(wildcard $(TEST_DIR)/main_*.cpp)
+TEST_SRC := $(filter-out $(TEST_DIR)/main_client.cpp $(TEST_DIR)/main_server.cpp, $(TEST_SRC))
 TEST_BIN = $(patsubst $(TEST_DIR)/%.cpp, $(TEST_DIR)/%, $(TEST_SRC))
 VERBOSE ?= 0
 

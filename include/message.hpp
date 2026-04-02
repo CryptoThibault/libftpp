@@ -22,6 +22,8 @@ public:
         return const_cast<Message&>(*this);
     }
 
+    DataBuffer& data();
+    const DataBuffer& data() const;
     int type() const;
 
 private:

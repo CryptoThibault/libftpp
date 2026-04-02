@@ -16,6 +16,12 @@ const std::byte* DataBuffer::data() const
     return _data.data();
 }
 
+void DataBuffer::append(const void* data, size_t size)
+{
+    const std::byte* ptr = reinterpret_cast<const std::byte*>(data);
+    _data.insert(_data.end(), ptr, ptr + size);
+}
+
 DataBuffer& DataBuffer::operator<<(const std::string& str)
 {
     size_t size = str.size();

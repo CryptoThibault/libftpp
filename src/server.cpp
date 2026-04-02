@@ -53,15 +53,20 @@ void Server::defineAction(const Message::Type& messageType, const std::function<
 
 void Server::sendTo(const Message& message, long long clientID)
 {
+    int type = message.type();
+    uint32_t dataSize = static_cast<uint32_t>(message.data().size());
+    std::vector<std::byte> sendBuffer(sizeof(type) + sizeof(dataSize) + dataSize);
+
+    std::memcpy(sendBuffer.data(), &type, sizeof(type));
+    std::memcpy(sendBuffer.data() + sizeof(type), &dataSize, sizeof(dataSize));
+
+    if (dataSize > 0)
+        std::memcpy(sendBuffer.data() + sizeof(type) + sizeof(dataSize), message.data().data(), dataSize);
+
     auto it = _clients.find(clientID);
     if (it == _clients.end()) return;
 
-    int sock = it->second;
-
-    DataBuffer buffer;
-    buffer << message;
-
-    ssize_t sent = ::send(sock, reinterpret_cast<const char*>(buffer.data()), buffer.size(), 0);
+    ssize_t sent = ::send(it->second, sendBuffer.data(), sendBuffer.size(), MSG_DONTWAIT);
     if (sent < 0)
         threadSafeCout << "error: Failed to send to client " << clientID << std::endl;
 }
@@ -74,12 +79,79 @@ void Server::sendToArray(const Message& message, std::vector<long long> clientID
 
 void Server::sendToAll(const Message& message)
 {
-    for (const auto& [id, client] : _clients)
-        sendTo(message, id);
+    for (auto& [clientID, sock] : _clients)
+        sendTo(message, clientID);
 }
 
 void Server::update()
 {
     if (!_started) return;
 
+    sockaddr_in clientAddr;
+    socklen_t addrLen = sizeof(clientAddr);
+    int clientSocket = accept(_socket, (sockaddr*)&clientAddr, &addrLen);
+    if (clientSocket >= 0)
+    {
+        long long clientID = _nextClientID++;
+        _clients[clientID] = clientSocket;
+        _recvBuffers[clientID] = {};
+        threadSafeCout << "New client connected: " << clientID << "\n";
+    }
+
+    std::vector<long long> disconnectedClients;
+
+    for (auto& [clientID, sock] : _clients)
+    {
+        char temp[4096];
+        ssize_t bytes = recv(sock, temp, sizeof(temp), MSG_DONTWAIT);
+
+        if (bytes == 0)
+        {
+            threadSafeCout << "Client disconnected: " << clientID << "\n";
+            disconnectedClients.push_back(clientID);
+            continue;
+        }
+        else if (bytes < 0)
+        {
+            continue;
+        }
+
+        auto& buffer = _recvBuffers[clientID];
+        buffer.insert(buffer.end(), reinterpret_cast<std::byte*>(temp), reinterpret_cast<std::byte*>(temp + bytes));
+
+        while (true)
+        {
+            if (buffer.size() < sizeof(int) + sizeof(uint32_t))
+                break;
+
+            int type;
+            uint32_t size;
+
+            std::memcpy(&type, buffer.data(), sizeof(int));
+            std::memcpy(&size, buffer.data() + sizeof(int), sizeof(uint32_t));
+
+            if (buffer.size() < sizeof(int) + sizeof(uint32_t) + size)
+                break;
+
+            Message msg(type);
+            if (size > 0)
+                msg.data().append(buffer.data() + sizeof(int) + sizeof(uint32_t), size);
+
+            auto it = _actions.find(type);
+            if (it != _actions.end())
+            {
+                long long idCopy = clientID;
+                it->second(idCopy, msg);
+            }
+
+            buffer.erase(buffer.begin(), buffer.begin() + sizeof(int) + sizeof(uint32_t) + size);
+        }
+    }
+
+    for (long long cid : disconnectedClients)
+    {
+        close(_clients[cid]);
+        _clients.erase(cid);
+        _recvBuffers.erase(cid);
+    }
 }

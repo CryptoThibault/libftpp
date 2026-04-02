@@ -22,6 +22,7 @@ private:
     size_t _port;
     bool _started = false;
     std::unordered_map<long long, int> _clients;
+    std::unordered_map<long long, std::vector<std::byte>> _recvBuffers;
     long long _nextClientID = 1;
     std::unordered_map<Message::Type, std::function<void(long long& clientID, const Message& msg)>> _actions;
     std::mutex _mutex;
