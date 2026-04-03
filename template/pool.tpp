@@ -1,16 +1,14 @@
-#include <utility>
-
-template <typename TType>
-void Pool<TType>::resize(const size_t& numberOfObjectStored)
+template <typename T>
+void Pool<T>::resize(const size_t& numberOfObjectStored)
 {
     _objects.reserve(numberOfObjectStored);
     for (size_t i = 0; i < numberOfObjectStored; ++i)
         _objects.emplace_back();
 }
 
-template <typename TType>
+template <typename T>
 template<typename ... TArgs>
-typename Pool<TType>::Object& Pool<TType>::acquire(TArgs&& ... p_args)
+typename Pool<T>::Object& Pool<T>::acquire(TArgs&& ... p_args)
 {
     for (auto& obj : _objects)
     {
@@ -23,8 +21,8 @@ typename Pool<TType>::Object& Pool<TType>::acquire(TArgs&& ... p_args)
     throw std::runtime_error("No free objects in the pool");
 }
 
-template <typename TType>
-Pool<TType>::Object::~Object()
+template <typename T>
+Pool<T>::Object::~Object()
 {
     if(_ptr)
     {
@@ -33,17 +31,17 @@ Pool<TType>::Object::~Object()
     }
 }
 
-template <typename TType>
-TType* Pool<TType>::Object::operator->()
+template <typename T>
+T* Pool<T>::Object::operator->()
 {
     return _ptr;
 }
 
-template <typename TType>
+template <typename T>
 template<typename... TArgs>
-void Pool<TType>::Object::allocate(TArgs&&... args)
+void Pool<T>::Object::allocate(TArgs&&... args)
 {
     if (!_ptr)
-        _ptr = new TType(std::forward<TArgs>(args)...);
+        _ptr = new T(std::forward<TArgs>(args)...);
     _inUse = true;
 }

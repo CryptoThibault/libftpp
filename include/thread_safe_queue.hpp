@@ -4,20 +4,20 @@
 #include <mutex>
 #include <stdexcept>
 
-template <typename TType>
+template <typename T>
 class ThreadSafeQueue
 {
 public:
-    void push_back(const TType& newElement);
-    void push_front(const TType& newElement);
-    TType pop_back();
-    TType pop_front();
+    void push_back(const T& newElement);
+    void push_front(const T& newElement);
+    T pop_back();
+    T pop_front();
 
     bool empty() const;
     size_t size() const;
 
 private:
-    std::deque<TType> _queue;
+    std::deque<T> _queue;
     mutable std::mutex _mutex;
 };
 

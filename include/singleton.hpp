@@ -2,11 +2,11 @@
 
 #include <stdexcept>
 
-template <typename TType>
+template <typename T>
 class Singleton
 {
 public:
-    static TType* instance()
+    static T* instance()
     {
         if (!_instance)
             throw std::runtime_error("Instance not created yet.");
@@ -18,15 +18,15 @@ public:
     {
         if (_instance)
             throw std::runtime_error("Instance already exists.");
-        _instance = new TType(std::forward<TArgs>(p_args)...);
+        _instance = new T(std::forward<TArgs>(p_args)...);
     }
 
 private:
-    static TType* _instance;
+    static T* _instance;
 
     Singleton() = delete;
     ~Singleton() = delete;
 };
 
-template <typename TType>
-TType* Singleton<TType>::_instance = nullptr;
+template <typename T>
+T* Singleton<T>::_instance = nullptr;

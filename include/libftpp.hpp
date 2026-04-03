@@ -5,3 +5,4 @@
 #include "thread_safe_iostream.hpp"
 #include "threading.hpp"
 #include "network.hpp"
+#include "mathematics.hpp"

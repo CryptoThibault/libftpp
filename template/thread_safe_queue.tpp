@@ -1,48 +1,46 @@
-#include "thread_safe_queue.hpp"
-
-template <typename TType>
-void ThreadSafeQueue<TType>::push_back(const TType& newElement)
+template <typename T>
+void ThreadSafeQueue<T>::push_back(const T& newElement)
 {
     std::lock_guard<std::mutex> lock(_mutex);
     _queue.push_back(newElement);
 }
 
-template <typename TType>
-void ThreadSafeQueue<TType>::push_front(const TType& newElement)
+template <typename T>
+void ThreadSafeQueue<T>::push_front(const T& newElement)
 {
     std::lock_guard<std::mutex> lock(_mutex);
     _queue.push_front(newElement);
 }
 
-template <typename TType>
-TType ThreadSafeQueue<TType>::pop_back()
+template <typename T>
+T ThreadSafeQueue<T>::pop_back()
 {
     std::lock_guard<std::mutex> lock(_mutex);
     if (_queue.empty()) throw std::runtime_error("Queue is empty");
-    TType element = std::move(_queue.back());
+    T element = std::move(_queue.back());
     _queue.pop_back();
     return element;
 }
 
-template <typename TType>
-TType ThreadSafeQueue<TType>::pop_front()
+template <typename T>
+T ThreadSafeQueue<T>::pop_front()
 {
     std::lock_guard<std::mutex> lock(_mutex);
     if (_queue.empty()) throw std::runtime_error("Queue is empty");
-    TType element = std::move(_queue.front());
+    T element = std::move(_queue.front());
     _queue.pop_front();
     return element;
 }
 
-template <typename TType>
-bool ThreadSafeQueue<TType>::empty() const
+template <typename T>
+bool ThreadSafeQueue<T>::empty() const
 {
     std::lock_guard<std::mutex> lock(_mutex);
     return _queue.empty();
 }
 
-template <typename TType>
-size_t ThreadSafeQueue<TType>::size() const
+template <typename T>
+size_t ThreadSafeQueue<T>::size() const
 {
     std::lock_guard<std::mutex> lock(_mutex);
     return _queue.size();

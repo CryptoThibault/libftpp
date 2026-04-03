@@ -60,7 +60,6 @@ void Client::disconnect()
 
 void Client::defineAction(const Message::Type& messageType, const std::function<void(const Message& msg)>& action)
 {
-    std::lock_guard<std::mutex> lock(_mutex);
     _actions[messageType] = action;
 }
 

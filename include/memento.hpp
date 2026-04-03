@@ -9,15 +9,15 @@ public:
     public:
         Snapshot() = default;
 
-        template<typename TType>
-        Snapshot& operator<<(const TType& value)
+        template<typename T>
+        Snapshot& operator<<(const T& value)
         {
             write(value);
             return *this;
         }
 
-        template<typename TType>
-        Snapshot& operator>>(TType& value)
+        template<typename T>
+        Snapshot& operator>>(T& value)
         {
             read(value);
             return *this;
@@ -26,14 +26,14 @@ public:
     private:
         DataBuffer buffer;
 
-        template<typename TType>
-        void write(const TType& value)
+        template<typename T>
+        void write(const T& value)
         {
             buffer << value;
         }
 
-        template<typename TType>
-        void read(TType& value)
+        template<typename T>
+        void read(T& value)
         {
             buffer >> value;
         }

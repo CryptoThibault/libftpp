@@ -8,15 +8,15 @@ public:
     
     Message(int type);
 
-    template<typename TType>
-    Message& operator<<(const TType& value)
+    template<typename T>
+    Message& operator<<(const T& value)
     {
         _data << value;
         return *this;
     }
 
-    template<typename TType>
-    Message& operator>>(TType& value) const
+    template<typename T>
+    Message& operator>>(T& value) const
     {
         _data >> value;
         return const_cast<Message&>(*this);

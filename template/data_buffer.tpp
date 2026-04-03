@@ -1,6 +1,3 @@
-#include <cstring>
-#include <stdexcept>
-
 template <typename T>
 DataBuffer& DataBuffer::operator<<(const T& value)
 {

@@ -1,7 +1,6 @@
 #pragma once
 
 #include <unordered_map>
-#include <mutex>
 #include "message.hpp"
 #include "server.hpp"
 
@@ -18,5 +17,4 @@ private:
     bool _connected = false;
     std::unordered_map<Message::Type, std::function<void(const Message&)>> _actions;
     std::vector<std::byte> _recvBuffer;
-    std::mutex _mutex;
 };

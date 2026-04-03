@@ -4,34 +4,35 @@
 #include <vector>
 #include <stdexcept>
 
-template <typename TType>
+template <typename T>
 class Pool
 {
 public:
     void resize(const size_t& numberOfObjectStored);
 
     template<typename ... TArgs>
-    typename Pool<TType>::Object& acquire(TArgs&& ... p_args);
+    typename Pool<T>::Object& acquire(TArgs&& ... p_args);
 
     class Object
     {
     public:
         ~Object();
 
-        TType* operator->();
+        T* operator->();
 
     private:
-        TType* _ptr = nullptr;
+        T* _ptr = nullptr;
         bool _inUse = false;
 
         template<typename ... TArgs>
         void allocate(TArgs&& ... args);
 
-        friend class Pool<TType>;
+        friend class Pool<T>;
     };
 
 private:
     std::vector<Object> _objects;
 };
 
+#include <utility>
 #include "pool.tpp"

@@ -47,7 +47,6 @@ void Server::start(const size_t& p_port)
 
 void Server::defineAction(const Message::Type& messageType, const std::function<void(long long& clientID, const Message& msg)>& action)
 {
-    std::lock_guard<std::mutex> lock(_mutex);
     _actions[messageType] = action;
 }
 
