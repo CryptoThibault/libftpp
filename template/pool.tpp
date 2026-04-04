@@ -8,13 +8,13 @@ void Pool<T>::resize(const size_t& numberOfObjectStored)
 
 template <typename T>
 template<typename ... TArgs>
-typename Pool<T>::Object& Pool<T>::acquire(TArgs&& ... p_args)
+typename Pool<T>::Object& Pool<T>::acquire(TArgs&& ... args)
 {
     for (auto& obj : _objects)
     {
         if (!obj._inUse)
         {
-            obj.allocate(std::forward<TArgs>(p_args)...);
+            obj.allocate(std::forward<TArgs>(args)...);
             return obj;
         }
     }

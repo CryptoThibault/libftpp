@@ -5,15 +5,14 @@
 #include <unistd.h>
 #include <fcntl.h>
 
-void Server::start(const size_t& p_port)
+void Server::start(const size_t& port)
 {
     if (_started)
     {
-        threadSafeCout << "Server already started on port " << _port << "\n";
+        threadSafeCout << "error: Server already started" << std::endl;
         return;
     }
 
-    _port = p_port;
     _socket = socket(AF_INET, SOCK_STREAM, 0);
     if (_socket < 0)
     {
@@ -24,7 +23,7 @@ void Server::start(const size_t& p_port)
     sockaddr_in addr{};
     addr.sin_family = AF_INET;
     addr.sin_addr.s_addr = INADDR_ANY;
-    addr.sin_port = htons(_port);
+    addr.sin_port = htons(port);
 
     if (bind(_socket, (struct sockaddr*)&addr, sizeof(addr)) < 0)
     {
@@ -42,10 +41,10 @@ void Server::start(const size_t& p_port)
 
     fcntl(_socket, F_SETFL, O_NONBLOCK);
     _started = true;
-    threadSafeCout << "Server started on port " << _port << std::endl;
+    threadSafeCout << "Server started on port " << port << std::endl;
 }
 
-void Server::defineAction(const Message::Type& messageType, const std::function<void(long long& clientID, const Message& msg)>& action)
+void Server::defineAction(const Message::Type& messageType, const Action& action)
 {
     _actions[messageType] = action;
 }
@@ -65,7 +64,7 @@ void Server::sendTo(const Message& message, long long clientID)
     auto it = _clients.find(clientID);
     if (it == _clients.end()) return;
 
-    ssize_t sent = ::send(it->second, sendBuffer.data(), sendBuffer.size(), MSG_DONTWAIT);
+    ssize_t sent = ::send(it->second.socket, sendBuffer.data(), sendBuffer.size(), MSG_DONTWAIT);
     if (sent < 0)
         threadSafeCout << "error: Failed to send to client " << clientID << std::endl;
 }
@@ -92,21 +91,20 @@ void Server::update()
     if (clientSocket >= 0)
     {
         long long clientID = _nextClientID++;
-        _clients[clientID] = clientSocket;
-        _recvBuffers[clientID] = {};
-        threadSafeCout << "New client connected: " << clientID << "\n";
+        _clients[clientID] = {clientSocket, {}};
+        threadSafeCout << "New client connected: " << clientID << std::endl;
     }
 
     std::vector<long long> disconnectedClients;
 
-    for (auto& [clientID, sock] : _clients)
+    for (auto& [clientID, connection] : _clients)
     {
         char temp[4096];
-        ssize_t bytes = recv(sock, temp, sizeof(temp), MSG_DONTWAIT);
+        ssize_t bytes = recv(connection.socket, temp, sizeof(temp), MSG_DONTWAIT);
 
         if (bytes == 0)
         {
-            threadSafeCout << "Client disconnected: " << clientID << "\n";
+            threadSafeCout << "Client disconnected: " << clientID << std::endl;
             disconnectedClients.push_back(clientID);
             continue;
         }
@@ -115,7 +113,7 @@ void Server::update()
             continue;
         }
 
-        auto& buffer = _recvBuffers[clientID];
+        auto& buffer = _clients[clientID].recvBuffer;
         buffer.insert(buffer.end(), reinterpret_cast<std::byte*>(temp), reinterpret_cast<std::byte*>(temp + bytes));
 
         while (true)
@@ -133,24 +131,23 @@ void Server::update()
                 break;
 
             Message msg(type);
-            if (size > 0)
-                msg.data().append(buffer.data() + sizeof(int) + sizeof(uint32_t), size);
-
-            auto it = _actions.find(type);
-            if (it != _actions.end())
-            {
-                long long idCopy = clientID;
-                it->second(idCopy, msg);
-            }
-
+            msg.data().append(buffer.data() + sizeof(int) + sizeof(uint32_t), size);
             buffer.erase(buffer.begin(), buffer.begin() + sizeof(int) + sizeof(uint32_t) + size);
+
+            _workerPool.addJob([this, clientID, msg]() mutable {
+                auto it = _actions.find(msg.type());
+                if (it != _actions.end())
+                {
+                    long long idCopy = clientID;
+                    it->second(idCopy, msg);
+                }
+            });
         }
     }
 
     for (long long cid : disconnectedClients)
     {
-        close(_clients[cid]);
+        close(_clients[cid].socket);
         _clients.erase(cid);
-        _recvBuffers.erase(cid);
     }
 }

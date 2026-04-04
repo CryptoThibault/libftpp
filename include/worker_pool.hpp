@@ -38,7 +38,7 @@ private:
     ThreadSafeQueue<std::shared_ptr<IJobs>> _jobs;
     std::mutex _mutex;
     std::condition_variable _cv;
-    bool _stop = false;
+    bool _stop{};
 
     void workerLoop();
 };

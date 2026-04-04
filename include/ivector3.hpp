@@ -19,8 +19,6 @@ public:
     IVector3<float> normalize() const;
     float dot(const IVector3<T>& other) const;
     IVector3<T> cross(const IVector3<T>& other) const;
-private:
-
 };
 
 #include <cmath>

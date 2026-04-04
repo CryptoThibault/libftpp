@@ -11,7 +11,7 @@ public:
     void resize(const size_t& numberOfObjectStored);
 
     template<typename ... TArgs>
-    typename Pool<T>::Object& acquire(TArgs&& ... p_args);
+    typename Pool<T>::Object& acquire(TArgs&& ... args);
 
     class Object
     {

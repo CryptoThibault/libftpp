@@ -9,18 +9,10 @@ public:
     Message(int type);
 
     template<typename T>
-    Message& operator<<(const T& value)
-    {
-        _data << value;
-        return *this;
-    }
+    Message& operator<<(const T& value);
 
     template<typename T>
-    Message& operator>>(T& value) const
-    {
-        _data >> value;
-        return const_cast<Message&>(*this);
-    }
+    Message& operator>>(T& value) const;
 
     DataBuffer& data();
     const DataBuffer& data() const;
@@ -30,3 +22,5 @@ private:
     int _type;
     mutable DataBuffer _data;
 };
+
+#include "message.tpp"

@@ -18,8 +18,6 @@ public:
     IVector2<float> normalize() const;
     float dot(const IVector2<T>& other) const;
     IVector2<T> cross() const;
-private:
-
 };
 
 #include <cmath>

@@ -1,32 +1,28 @@
 #pragma once
 
+#include <memory>
+#include <mutex>
 #include <stdexcept>
 
 template <typename T>
 class Singleton
 {
 public:
-    static T* instance()
-    {
-        if (!_instance)
-            throw std::runtime_error("Instance not created yet.");
-        return _instance;
-    }
+    static T* instance();
 
     template<typename ... TArgs>
-    static void instantiate(TArgs&& ... p_args)
-    {
-        if (_instance)
-            throw std::runtime_error("Instance already exists.");
-        _instance = new T(std::forward<TArgs>(p_args)...);
-    }
+    static void instantiate(TArgs&& ... args);
+
+protected:
+    Singleton() = default;
+    ~Singleton() = default;
 
 private:
-    static T* _instance;
+    static std::unique_ptr<T> _instance;
+    static std::mutex _mutex;
 
-    Singleton() = delete;
-    ~Singleton() = delete;
+    Singleton(const Singleton&) = delete;
+    Singleton& operator=(const Singleton&) = delete;
 };
 
-template <typename T>
-T* Singleton<T>::_instance = nullptr;
+#include "singleton.tpp"

@@ -23,7 +23,7 @@ public:
 
 private:
     std::vector<std::byte> _data;
-    size_t _readPos = 0;
+    size_t _readPos{};
 };
 
 #include <cstring>

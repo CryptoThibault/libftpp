@@ -2,3 +2,4 @@
 
 #include "pool.hpp"
 #include "data_buffer.hpp"
+#include "registry.hpp"

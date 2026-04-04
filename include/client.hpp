@@ -14,7 +14,7 @@ public:
 
 private:
     int _socket;
-    bool _connected = false;
+    bool _connected{};
     std::unordered_map<Message::Type, std::function<void(const Message&)>> _actions;
     std::vector<std::byte> _recvBuffer;
 };

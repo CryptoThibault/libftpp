@@ -19,7 +19,7 @@ public:
 
 private:
     Thread _thread;
-    std::atomic<bool> _stop{false};
+    std::atomic<bool> _stop{};
     std::map<std::string, std::function<void()>> _tasks;
     std::mutex _mutex;
     std::condition_variable _cv;
