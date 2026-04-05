@@ -1,5 +1,7 @@
 #pragma once
 
+#include <cmath>
+
 template <typename T>
 class IVector3
 {
@@ -21,5 +23,4 @@ public:
     IVector3<T> cross(const IVector3<T>& other) const;
 };
 
-#include <cmath>
 #include "ivector3.tpp"

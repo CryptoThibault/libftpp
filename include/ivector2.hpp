@@ -1,5 +1,7 @@
 #pragma once
 
+#include <cmath>
+
 template <typename T>
 class IVector2
 {
@@ -20,5 +22,4 @@ public:
     IVector2<T> cross() const;
 };
 
-#include <cmath>
 #include "ivector2.tpp"

@@ -39,8 +39,11 @@ int main() {
         std::cout << "Exception caught: " << e.what() << std::endl;  // Handle state not found
     }
     
+    sm.addTransition(State::Paused, State::Stopped, [] {});
+    sm.transitionTo(State::Stopped);
+
     try {
-    	sm.transitionTo(State::Stopped);  // Should not print anything, default empty lambda is executed
+    	sm.update();  // Should not print anything, default empty lambda is executed
     } catch (const std::invalid_argument& e) {
         std::cout << "Exception caught: " << e.what() << std::endl;  // Handle state not found
     }

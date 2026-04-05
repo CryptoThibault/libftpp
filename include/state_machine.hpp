@@ -17,7 +17,7 @@ public:
     void update();
 
 private:
-    TState _currentState;
+    TState _currentState{};
 
     std::unordered_set<TState> _states;
     std::unordered_map<TState, std::pair<TState, std::function<void()>>> _transitions;

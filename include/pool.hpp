@@ -3,36 +3,40 @@
 #include <cstddef>
 #include <vector>
 #include <stdexcept>
+#include <utility>
 
 template <typename T>
-class Pool
-{
+class Pool {
 public:
-    void resize(const size_t& numberOfObjectStored);
-
-    template<typename ... TArgs>
-    typename Pool<T>::Object& acquire(TArgs&& ... args);
-
-    class Object
-    {
+    class Object {
     public:
-        ~Object();
-
+        Object(const Object&) = delete;
+        Object& operator=(const Object&) = delete;
+        
         T* operator->();
 
-    private:
-        T* _ptr = nullptr;
-        bool _inUse = false;
+        template<typename... TArgs>
+        void allocate(TArgs&&... args);
 
-        template<typename ... TArgs>
-        void allocate(TArgs&& ... args);
+        void release();
+        bool inUse() const { return _inUse; }
+
+    private:
+        T* _ptr{};
+        bool _inUse{};
 
         friend class Pool<T>;
     };
+
+    ~Pool();
+
+    void resize(const size_t& numberOfObjectStored);
+
+    template<typename... TArgs>
+    Object acquire(TArgs&&... args);
 
 private:
     std::vector<Object> _objects;
 };
 
-#include <utility>
 #include "pool.tpp"

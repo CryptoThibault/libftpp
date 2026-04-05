@@ -5,23 +5,23 @@
 #include <memory>
 #include <mutex>
 #include <condition_variable>
-#include "thread_safe_queue.hpp"
 #include "thread.hpp"
+#include "thread_safe_queue.hpp"
 
 class WorkerPool
 {
 public:
-    WorkerPool(size_t numThreads);
-    ~WorkerPool();
-
-    void addJob(const std::function<void()>& jobToExecute);
-
     class IJobs
     {
     public:
         virtual ~IJobs() = default;
         virtual void execute() = 0;
     };
+
+    WorkerPool(size_t numThreads);
+    ~WorkerPool();
+
+    void addJob(const std::function<void()>& jobToExecute);
 
 private:
     class FunctionJob : public IJobs

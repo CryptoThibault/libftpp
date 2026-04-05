@@ -37,11 +37,11 @@ void PersistentWorker::workerLoop()
     {
         _cv.wait(lock, [this]{ return _stop || !_tasks.empty(); });
 
-        for (auto& [name, task] : _tasks)
-        {
-            lock.unlock();
+        std::map<std::string, std::function<void()>> tasksToRun = _tasks;
+
+        lock.unlock();
+        for (auto& [name, task] : tasksToRun)
             task();
-            lock.lock();
-        }
+        lock.lock();
     }
 }

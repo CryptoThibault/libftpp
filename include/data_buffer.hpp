@@ -3,6 +3,8 @@
 #include <vector>
 #include <string>
 #include <cstddef>
+#include <cstring>
+#include <stdexcept>
 
 class DataBuffer
 {
@@ -26,6 +28,4 @@ private:
     size_t _readPos{};
 };
 
-#include <cstring>
-#include <stdexcept>
 #include "data_buffer.tpp"
