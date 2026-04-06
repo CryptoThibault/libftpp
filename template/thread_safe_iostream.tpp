@@ -1,23 +1,21 @@
 template<typename T>
 ThreadSafeIOStream& ThreadSafeIOStream::operator<<(const T& value)
 {
-    if (!_prefixAdded)
+    std::lock_guard<std::mutex> lock(_mutex);
+
+    if (!_prefix.empty() && !_prefixAdded)
     {
-        _oss << _prefix;
+        (*_output) << _prefix;
         _prefixAdded = true;
     }
 
-    _oss << value;
+    (*_output) << value;
+    (*_output) << std::flush;
 
-    if constexpr (std::is_same_v<T, std::string>)
-        if (!value.empty() && value.back() == '\n')
-        {
-            std::lock_guard<std::mutex> lock(_mutex);
-            std::cout << _oss.str();
-            _oss.str("");
-            _oss.clear();
-            _prefixAdded = false;
-        }
+    std::ostringstream oss;
+    oss << value;
+    if (oss.str().find('\n') != std::string::npos)
+        _prefixAdded = false;
 
     return *this;
 }
@@ -27,6 +25,8 @@ ThreadSafeIOStream& ThreadSafeIOStream::operator>>(T& value)
 {
     std::lock_guard<std::mutex> lock(_mutex);
     std::cin >> value;
+    std::cin.clear();
+    std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
     return *this;
 }
 
@@ -35,5 +35,8 @@ void ThreadSafeIOStream::prompt(const std::string& question, T& dest)
 {
     std::lock_guard<std::mutex> lock(_mutex);
     std::cout << _prefix << question;
+    std::cout.flush();
     std::cin >> dest;
+    std::cin.clear();
+    std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
 }

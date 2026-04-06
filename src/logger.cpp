@@ -1,76 +1,34 @@
 #include "logger.hpp"
-#include "thread_safe_iostream.hpp"
 #include <chrono>
 #include <ctime>
 #include <iomanip>
-#include <sstream>
 
-void Logger::log(Level level, const std::string& message)
+Logger::LogLine::LogLine(Logger& logger, Level level) : _logger(logger), _level(level) {}
+
+Logger::LogLine::~LogLine()
 {
-    if (level < _currentLevel) return;
-
-    if (_showTime) threadSafeCout << "[" << getCurrentTime() << "] ";
-    if (_showLevel) threadSafeCout << "[" << toString(level) << "] ";
-    threadSafeCout << message << std::endl;
+    if (_level < _logger._currentLevel) return;
+    threadSafeCout << std::endl;
 }
 
-void Logger::trace(const std::string& message)
+Logger::LogLine& Logger::LogLine::operator<<(std::ostream& (*manip)(std::ostream&))
 {
-    log(Level::Trace, message);
+    if (_level < _logger._currentLevel) return *this;
+    threadSafeCout << manip;
+    return *this;
 }
 
-void Logger::debug(const std::string& message)
-{
-    log(Level::Debug, message);
-}
+Logger::LogLine Logger::log(Level level) { return LogLine(*this, level); }
+Logger::LogLine Logger::trace() { return log(Level::Trace); }
+Logger::LogLine Logger::debug() { return log(Level::Debug); }
+Logger::LogLine Logger::info() { return log(Level::Info); }
+Logger::LogLine Logger::warning() { return log(Level::Warning); }
+Logger::LogLine Logger::error() { return log(Level::Error); }
+Logger::LogLine Logger::critical() { return log(Level::Critical); }
 
-void Logger::info(const std::string& message)
-{
-    log(Level::Info, message);
-}
-
-void Logger::warning(const std::string& message)
-{
-    log(Level::Warning, message);
-}
-
-void Logger::error(const std::string& message)
-{
-    log(Level::Error, message);
-}
-
-void Logger::critical(const std::string& message)
-{
-    log(Level::Critical, message);
-}
-
-void Logger::setLevel(Level level)
-{
-    _currentLevel = level;
-}
-
-void Logger::setShowLevel(bool show)
-{
-    _showLevel = show;
-}
-
-void Logger::setShowTime(bool show)
-{
-    _showTime = show;
-}
-
-bool Logger::setOutput(std::ofstream& output)
-{
-    if (!output.is_open()) return false;
-    threadSafeCout.setOutput(output);
-    return true;
-}
-
-void Logger::resetOutput()
-{
-    if (_output.is_open()) _output.close();
-    threadSafeCout.setOutput(std::cout);
-}
+void Logger::setLevel(Level level) { _currentLevel = level; }
+void Logger::setShowLevel(bool show) { _showLevel = show; }
+void Logger::setShowTime(bool show) { _showTime = show; }
 
 std::string Logger::toString(Level level)
 {

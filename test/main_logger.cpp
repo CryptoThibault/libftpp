@@ -7,7 +7,7 @@ void worker(int id)
 {
     for (int i = 0; i < 3; ++i)
     {
-        Logger::instance()->info("Worker " + std::to_string(id) + " running");
+        Logger::instance()->info() << "Worker " << id << " running";
         std::this_thread::sleep_for(std::chrono::milliseconds(10)); // Simulate work
     }
 }
@@ -15,21 +15,22 @@ void worker(int id)
 int main()
 {
     Logger::instantiate();
+    auto logger = Logger::instance();
 
     // Logger configuration
-    Logger::instance()->setLevel(Level::Debug);
-    Logger::instance()->setShowLevel(true);
-    Logger::instance()->setShowTime(true);
+    logger->setLevel(Logger::Level::Debug);
+    logger->setShowLevel(true);
+    logger->setShowTime(true);
 
     // ===== Console test =====
-    Logger::instance()->info("=== Console Test Start ===");
+    logger->info() << "=== Console Test Start ===";
 
-    Logger::instance()->trace("Trace message");
-    Logger::instance()->debug("Debug message");
-    Logger::instance()->info("Info message");
-    Logger::instance()->warning("Warning message");
-    Logger::instance()->error("Error message");
-    Logger::instance()->critical("Critical message");
+    logger->trace() << "Trace message";
+    logger->debug() << "Debug message";
+    logger->info() << "Info message";
+    logger->warning() << "Warning message";
+    logger->error() << "Error message";
+    logger->critical() << "Critical message";
 
     // Multi-thread test
     std::vector<std::thread> threads;
@@ -39,20 +40,20 @@ int main()
     for (auto& t : threads)
         t.join();
 
-    Logger::instance()->info("=== Console Test End ===");
+    logger->info() << "=== Console Test End ===";
 
     // ===== File test =====
     static std::ofstream file("log.txt");
-    Logger::instance()->setOutput(file);
+    threadSafeCout.setOutput(file);
 
-    Logger::instance()->info("=== File Test Start ===");
+    logger->info() << "=== File Test Start ===";
 
-    Logger::instance()->trace("Trace message");
-    Logger::instance()->debug("Debug message");
-    Logger::instance()->info("Info message");
-    Logger::instance()->warning("Warning message");
-    Logger::instance()->error("Error message");
-    Logger::instance()->critical("Critical message");
+    logger->trace() << "Trace message";
+    logger->debug() << "Debug message";
+    logger->info() << "Info message";
+    logger->warning() << "Warning message";
+    logger->error() << "Error message";
+    logger->critical() << "Critical message";
 
     threads.clear();
     for (int i = 0; i < 3; ++i)
@@ -61,9 +62,9 @@ int main()
     for (auto& t : threads)
         t.join();
 
-    Logger::instance()->info("=== File Test End ===");
-    Logger::instance()->resetOutput();
-    Logger::instance()->info("Back to console");
+    logger->info() << "=== File Test End ===";
+    threadSafeCout.resetOutput();
+    logger->info() << "Back to console";
 
     return 0;
 }

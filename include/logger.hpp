@@ -1,46 +1,58 @@
 #pragma once
 
 #include <string>
+#include <sstream>
 #include <fstream>
 #include "singleton.hpp"
-
-enum class Level
-{
-    Trace,
-    Debug,
-    Info,
-    Warning,
-    Error,
-    Critical
-};
+#include "thread_safe_iostream.hpp"
 
 class Logger : public Singleton<Logger>
 {
 public:
-    void log(Level level, const std::string& message);
+    enum Level { Trace, Debug, Info, Warning, Error, Critical };
+    
+    class LogLine
+    {
+    public:
+        LogLine(Logger& logger, Level level);
+        ~LogLine();
 
-    void trace(const std::string& message);
-    void debug(const std::string& message);
-    void info(const std::string& message);
-    void warning(const std::string& message);
-    void error(const std::string& message);
-    void critical(const std::string& message);
+        template<typename T>
+        LogLine& operator<<(const T& value);
+
+        LogLine& operator<<(std::ostream& (*manip)(std::ostream&));
+
+    private:
+        void flush();
+
+        Logger& _logger;
+        Level _level;
+        std::ostringstream _oss;
+        bool _prefixAdded{};
+    };
+
+    LogLine log(Level level);
+    LogLine trace();
+    LogLine debug();
+    LogLine info();
+    LogLine warning();
+    LogLine error();
+    LogLine critical();
 
     void setLevel(Level level);
     void setShowLevel(bool show);
     void setShowTime(bool show);
 
-    bool setOutput(std::ofstream& output);
-    void resetOutput();
+private:
+    std::ofstream _output;
+    Level _currentLevel{Level::Info};
+    bool _showLevel{};
+    bool _showTime{};
 
     std::string toString(Level level);
     std::string getCurrentTime() const;
 
-private:
-    Level _currentLevel{Level::Info};
-    bool _showLevel{};
-    bool _showTime{};
-    std::ofstream _output;
-
     friend class Singleton<Logger>;
 };
+
+#include "logger.tpp"

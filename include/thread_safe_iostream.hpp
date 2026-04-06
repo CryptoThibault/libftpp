@@ -20,15 +20,15 @@ public:
     void prompt(const std::string& question, T& dest);
     
     void setPrefix(const std::string& prefix);
+    void clearPrefix();
     void setOutput(std::ostream& stream);
+    void resetOutput();
 
 private:
     static std::mutex _mutex;
+    static std::ostream* _output;
     static thread_local std::string _prefix;
-    thread_local static std::ostringstream _oss;
     static thread_local bool _prefixAdded;
-
-    void flushThreadBuffer(std::ostringstream& oss);
 };
 
 extern thread_local ThreadSafeIOStream threadSafeCout;
