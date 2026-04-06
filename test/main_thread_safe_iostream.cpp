@@ -6,6 +6,7 @@ void printNumbers(const std::string& p_prefix) {
     threadSafeCout.setPrefix(p_prefix);
     for (int i = 1; i <= 5; ++i) {
         threadSafeCout << "Number: " << i << std::endl;
+        std::this_thread::sleep_for(std::chrono::milliseconds(10));
     }
 }
 

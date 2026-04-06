@@ -13,6 +13,7 @@
 - State Machine
 ## IOStream
 - Thread Safe IOStream
+- Logger
 ## Threading
 - Thread Safe Queue
 - Thread

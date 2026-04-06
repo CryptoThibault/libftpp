@@ -113,6 +113,7 @@ clean:
 
 fclean: clean
 	rm -f $(ARCHIVE)
+	rm -f log.txt
 
 re: fclean all
 

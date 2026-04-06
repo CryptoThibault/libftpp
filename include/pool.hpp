@@ -1,42 +1,41 @@
 #pragma once
-
-#include <cstddef>
 #include <vector>
-#include <stdexcept>
 #include <utility>
 
 template <typename T>
-class Pool {
+class Pool
+{
 public:
-    class Object {
+    class Object
+    {
     public:
+        Object() = default;
         Object(const Object&) = delete;
-        Object& operator=(const Object&) = delete;
-        
+        Object(Object&& other) noexcept;
+        ~Object();
+
         T* operator->();
 
-        template<typename... TArgs>
-        void allocate(TArgs&&... args);
-
-        void release();
-        bool inUse() const { return _inUse; }
-
     private:
-        T* _ptr{};
-        bool _inUse{};
-
+        Pool<T>* _pool{};
+        size_t _index{};
         friend class Pool<T>;
+        Object(Pool<T>* pool, size_t index) : _pool(pool), _index(index) {}
     };
 
     ~Pool();
 
-    void resize(const size_t& numberOfObjectStored);
+    void resize(const size_t numberOfObjectStored);
 
     template<typename... TArgs>
     Object acquire(TArgs&&... args);
 
 private:
-    std::vector<Object> _objects;
+    struct InternalObject
+    {
+        T* _ptr{};
+        bool _inUse{};
+    };
+    std::vector<InternalObject> _objects;
 };
-
 #include "pool.tpp"

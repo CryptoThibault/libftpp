@@ -6,12 +6,14 @@
 void myFunction1() {
     for (int i = 0; i < 5; ++i) {
         threadSafeCout << "Hello from Function1, iteration " << i << std::endl;
+        std::this_thread::sleep_for(std::chrono::milliseconds(10));
     }
 }
 
 void myFunction2() {
     for (int i = 0; i < 5; ++i) {
         threadSafeCout << "Hello from Function2, iteration " << i << std::endl;
+        std::this_thread::sleep_for(std::chrono::milliseconds(10));
     }
 }
 

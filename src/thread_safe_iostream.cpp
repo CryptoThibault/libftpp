@@ -26,3 +26,9 @@ void ThreadSafeIOStream::setPrefix(const std::string& prefix)
 {
     _prefix = prefix;
 }
+
+void ThreadSafeIOStream::setOutput(std::ostream& stream)
+{
+    std::lock_guard<std::mutex> lock(_mutex);
+    std::cout.rdbuf(stream.rdbuf());
+}

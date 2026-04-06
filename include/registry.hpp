@@ -19,9 +19,6 @@ public:
     T* find(const std::function<bool(const T&)>& predicate);
     size_t size() const;
 
-protected:
-    Registry() = default;
-
 private:
     mutable std::mutex _mutex;
     std::vector<T> _objects;

@@ -16,10 +16,11 @@ public:
     template<typename T>
     ThreadSafeIOStream& operator>>(T& value);
 
-    void setPrefix(const std::string& prefix);
-    
     template<typename T>
     void prompt(const std::string& question, T& dest);
+    
+    void setPrefix(const std::string& prefix);
+    void setOutput(std::ostream& stream);
 
 private:
     static std::mutex _mutex;

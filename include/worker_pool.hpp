@@ -5,6 +5,7 @@
 #include <memory>
 #include <mutex>
 #include <condition_variable>
+#include "pool.hpp"
 #include "thread.hpp"
 #include "thread_safe_queue.hpp"
 
@@ -27,6 +28,7 @@ private:
     class FunctionJob : public IJobs
     {
     public:
+        FunctionJob() = default;
         FunctionJob(std::function<void()> f) : _func(std::move(f)) {}
         void execute() override { _func(); }
 
@@ -34,6 +36,7 @@ private:
         std::function<void()> _func;
     };
 
+    Pool<FunctionJob> _jobPool;
     std::vector<Thread> _threads;
     ThreadSafeQueue<std::shared_ptr<IJobs>> _jobs;
     std::mutex _mutex;
