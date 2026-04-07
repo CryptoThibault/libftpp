@@ -16,7 +16,8 @@ OBJ = $(patsubst $(SRC_DIR)/%.cpp, $(OBJ_DIR)/%.o, $(SRC))
 DEP = $(wildcard $(INC_DIR)/*.hpp) $(wildcard $(TEMP_DIR)/*.tpp)
 
 TEST_SRC = $(wildcard $(TEST_DIR)/main_*.cpp)
-TEST_SRC := $(filter-out $(TEST_DIR)/main_thread_safe_iostream.cpp $(TEST_DIR)/main_client.cpp $(TEST_DIR)/main_server.cpp, $(TEST_SRC))
+TEST_SRC := $(filter-out $(TEST_DIR)/main_thread_safe_iostream.cpp \
+	$(TEST_DIR)/main_client.cpp $(TEST_DIR)/main_server.cpp, $(TEST_SRC))
 HIDE_OUTPUT := $(TEST_DIR)/main_worker_pool.cpp $(TEST_DIR)/main_persistent_worker.cpp
 VERBOSE ?= 1
 VALGRIND ?= 0
