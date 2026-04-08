@@ -5,16 +5,18 @@
 ## Data Structures
 - Pool
 - Data Buffer
+- Field
 - Registry
 ## Design Paterns
 - Memento
 - Observer
 - Singleton
 - State Machine
+- Factory
 ## IOStream
 - Thread Safe IOStream
-- Loader
 - Logger
+- Loader
 ## Threading
 - Thread Safe Queue
 - Thread

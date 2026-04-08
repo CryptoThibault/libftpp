@@ -1,8 +1,9 @@
+#pragma once
+#include "singleton.hpp"
 #include <vector>
 #include <mutex>
 #include <stdexcept>
 #include <functional>
-#include "singleton.hpp"
 
 template <typename T>
 class Registry : public Singleton<Registry<T>>
@@ -11,6 +12,7 @@ class Registry : public Singleton<Registry<T>>
 
 public:
     void add(T obj);
+    void add(const std::vector<T>& vec);
     void remove(const std::function<bool(const T&)>& predicate);
     void clear();
 

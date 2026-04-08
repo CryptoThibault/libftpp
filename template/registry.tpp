@@ -6,6 +6,13 @@ void Registry<T>::add(T obj)
 }
 
 template <typename T>
+void Registry<T>::add(const std::vector<T>& vec)
+{
+    std::lock_guard<std::mutex> lock(_mutex);
+    _objects.insert(_objects.end(), vec.begin(), vec.end());
+}
+
+template <typename T>
 void Registry<T>::remove(const std::function<bool(const T&)>& predicate)
 {
     std::lock_guard<std::mutex> lock(_mutex);

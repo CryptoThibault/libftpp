@@ -1,5 +1,4 @@
 #pragma once
-
 #include "data_buffer.hpp"
 
 class Message {

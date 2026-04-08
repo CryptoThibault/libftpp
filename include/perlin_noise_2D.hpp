@@ -1,5 +1,4 @@
 #pragma once
-
 #include "random_2D_coordinate_generator.hpp"
 
 class PerlinNoise2D : Random2DCoordinateGenerator

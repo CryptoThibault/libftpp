@@ -1,8 +1,8 @@
 #pragma once
-
-#include <unordered_map>
 #include "message.hpp"
 #include "server.hpp"
+#include <unordered_map>
+#include <functional>
 
 class Client {
 public:

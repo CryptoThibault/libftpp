@@ -1,58 +1,111 @@
 #include "loader.hpp"
+#include <fstream>
+#include <sstream>
+#include <cctype>
+#include <stdexcept>
 
-Loader::DataMap Loader::load(const std::string& filepath)
+DataMap Loader::load(const std::string& filepath)
 {
     std::ifstream file(filepath);
-    if (!file.is_open()) return {};
+    if (!file.is_open())
+        throw std::runtime_error("Could not open file: " + filepath);
 
-    nlohmann::json j;
-    file >> j;
-    file.close();
-
-    DataMap result;
-
-    for (auto& [key, value] : j.items())
-    {
-        if (value.is_array())
-            result[key] = composeDataVector(value);
-        else if (value.is_object())
-            result[key] = composeDataVector(nlohmann::json::array({ value }));
-        else
-            result[key] = {};
-    }
-
-    return result;
+    std::stringstream buffer;
+    buffer << file.rdbuf();
+    std::string s = buffer.str();
+    size_t i = 0;
+    return loadMap(s, i);
 }
 
-Loader::DataVector Loader::composeDataVector(const nlohmann::json& jArray)
+DataMap Loader::loadMap(const std::string& s, size_t& i)
 {
-    DataVector result;
-    if (!jArray.is_array()) return result;
+    DataMap map;
+    skipWhitespace(s, i);
+    if (s[i] != '{') throw std::runtime_error("Expected '{' at position " + std::to_string(i));
+    i++;
 
-    for (auto& obj : jArray)
+    while (true)
     {
-        if (!obj.is_object()) continue;
+        skipWhitespace(s, i);
+        if (i >= s.size()) throw std::runtime_error("Unexpected end of object");
 
-        ObjectMap map;
-        for (auto& [k, v] : obj.items())
+        if (s[i] == '}') { i++; break; }
+
+        Field keyField = loadField(s, i);
+        std::string key = keyField;
+
+        skipWhitespace(s, i);
+        if (s[i] != ':') throw std::runtime_error("Expected ':' after key");
+        i++;
+
+        Field value = loadField(s, i);
+        map.emplace(key, value);
+
+        skipWhitespace(s, i);
+        if (i < s.size() && s[i] == ',') i++;
+    }
+
+    return map;
+}
+
+DataVector Loader::loadVector(const std::string& s, size_t& i)
+{
+    DataVector vec;
+    skipWhitespace(s, i);
+    if (s[i] != '[') throw std::runtime_error("Expected '[' at position " + std::to_string(i));
+    i++;
+
+    while (true)
+    {
+        skipWhitespace(s, i);
+        if (i >= s.size()) throw std::runtime_error("Unexpected end of array");
+
+        if (s[i] == ']') { i++; break; }
+
+        vec.push_back(loadField(s, i));
+
+        skipWhitespace(s, i);
+        if (i < s.size() && s[i] == ',') i++;
+    }
+
+    return vec;
+}
+
+Field Loader::loadField(const std::string& s, size_t& i)
+{
+    skipWhitespace(s, i);
+    if (i >= s.size()) throw std::runtime_error("Unexpected end of input");
+
+    if (s[i] == '"')
+    {
+        std::string str;
+        i++;
+        while (i < s.size() && s[i] != '"')
         {
-            if (v.is_array() && !v.empty() && v[0].is_object())
-                map[k] = composeDataVector(v);
-            else
-                map[k] = toString(v);
+            if (s[i] == '\\' && i + 1 < s.size()) { str += s[++i]; }
+            else str += s[i];
+            i++;
         }
-
-        result.push_back(map);
+        if (i >= s.size()) throw std::runtime_error("Unterminated string");
+        i++;
+        return str;
     }
+    else if (std::isdigit(s[i]) || s[i] == '-')
+    {
+        size_t start = i;
+        if (s[i] == '-') i++;
+        while (i < s.size() && std::isdigit(s[i])) i++;
+        return std::stod(s.substr(start, i - start));
+    }
+    else if (s.compare(i, 4, "true") == 0) { i += 4; return true; }
+    else if (s.compare(i, 5, "false") == 0) { i += 5; return false; }
+    else if (s[i] == '{') return loadMap(s, i);
+    else if (s[i] == '[') return loadVector(s, i);
 
-    return result;
+    throw std::runtime_error("Unexpected character at position " + std::to_string(i));
 }
 
-std::string Loader::toString(const nlohmann::json& value)
+void Loader::skipWhitespace(const std::string& s, size_t& i)
 {
-    if (value.is_string())  return value.get<std::string>();
-    if (value.is_number())  return std::to_string(value.get<double>());
-    if (value.is_boolean()) return value.get<bool>() ? "true" : "false";
-    if (value.is_null())    return "null";
-    return value.dump();
+    while (i < s.size() && std::isspace(s[i])) i++;
 }

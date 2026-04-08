@@ -1,11 +1,10 @@
 #pragma once
-
-#include <functional>
-#include <vector>
-#include <unordered_map>
 #include "message.hpp"
 #include "client.hpp"
 #include "worker_pool.hpp"
+#include <functional>
+#include <vector>
+#include <unordered_map>
 
 class Server
 {

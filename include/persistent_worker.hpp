@@ -1,12 +1,11 @@
 #pragma once
-
+#include "thread.hpp"
 #include <string>
 #include <functional>
 #include <atomic>
 #include <map>
 #include <mutex>
 #include <condition_variable>
-#include "thread.hpp"
 
 class PersistentWorker
 {

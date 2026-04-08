@@ -3,20 +3,20 @@
     {
       "name": "Alice",
       "age": 30,
-      "emails": ["alice@example.com", "alice@gmail.com"],
-      "address": {
-        "city": "Paris",
-        "zip": "75001"
-      }
+      "active": true,
+      "hobbies": ["reading", "cycling"]
     },
     {
       "name": "Bob",
       "age": 25,
-      "emails": ["bob@example.com"],
-      "address": {
-        "city": "Lyon",
-        "zip": "69000"
-      }
+      "active": false,
+      "hobbies": ["gaming", "cooking"]
+    },
+    {
+      "name": "Charlie",
+      "age": 40,
+      "active": true,
+      "hobbies": []
     }
   ]
 }

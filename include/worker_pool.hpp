@@ -1,13 +1,12 @@
 #pragma once
-
+#include "pool.hpp"
+#include "thread.hpp"
+#include "thread_safe_queue.hpp"
 #include <functional>
 #include <vector>
 #include <memory>
 #include <mutex>
 #include <condition_variable>
-#include "pool.hpp"
-#include "thread.hpp"
-#include "thread_safe_queue.hpp"
 
 class WorkerPool
 {

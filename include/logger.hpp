@@ -1,10 +1,9 @@
 #pragma once
-
+#include "thread_safe_iostream.hpp"
 #include <string>
 #include <sstream>
 #include <fstream>
 #include "singleton.hpp"
-#include "thread_safe_iostream.hpp"
 
 class Logger : public Singleton<Logger>
 {
