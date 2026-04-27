@@ -3,15 +3,15 @@
 
 int main() {
     // Load the JSON data
-    DataMap data = Loader::load("data.json");
+    FieldMap data = Loader::load("data.json");
 
     // Access the "People" array
-    const DataVector& peopleVec = data.at("People");
+    const FieldVector& peopleVec = data.at("People");
 
     // Loop through each person
     for (size_t i = 0; i < peopleVec.size(); ++i)
     {
-        const DataMap& personMap = peopleVec[i];
+        const FieldMap& personMap = peopleVec[i];
 
         std::string name = personMap.at("name");
         int age = personMap.at("age");

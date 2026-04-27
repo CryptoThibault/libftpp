@@ -4,7 +4,7 @@
 #include <cctype>
 #include <stdexcept>
 
-DataMap Loader::load(const std::string& filepath)
+FieldMap Loader::load(const std::string& filepath)
 {
     std::ifstream file(filepath);
     if (!file.is_open())
@@ -17,9 +17,9 @@ DataMap Loader::load(const std::string& filepath)
     return loadMap(s, i);
 }
 
-DataMap Loader::loadMap(const std::string& s, size_t& i)
+FieldMap Loader::loadMap(const std::string& s, size_t& i)
 {
-    DataMap map;
+    FieldMap map;
     skipWhitespace(s, i);
     if (s[i] != '{') throw std::runtime_error("Expected '{' at position " + std::to_string(i));
     i++;
@@ -48,9 +48,9 @@ DataMap Loader::loadMap(const std::string& s, size_t& i)
     return map;
 }
 
-DataVector Loader::loadVector(const std::string& s, size_t& i)
+FieldVector Loader::loadVector(const std::string& s, size_t& i)
 {
-    DataVector vec;
+    FieldVector vec;
     skipWhitespace(s, i);
     if (s[i] != '[') throw std::runtime_error("Expected '[' at position " + std::to_string(i));
     i++;

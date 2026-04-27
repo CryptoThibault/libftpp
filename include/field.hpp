@@ -6,12 +6,12 @@
 #include <stdexcept>
 
 class Field;
-using DataVector = std::vector<Field>;
-using DataMap    = std::map<std::string, Field>;
+using FieldVector = std::vector<Field>;
+using FieldMap    = std::map<std::string, Field>;
 
 class Field {
 public:
-    using Variant = std::variant<std::string, double, bool, DataVector, DataMap>;
+    using Variant = std::variant<std::string, double, bool, FieldVector, FieldMap>;
 
     Field();
     Field(const std::string& s);
@@ -21,8 +21,8 @@ public:
     Field(int n);
     Field(long n);
     Field(bool b);
-    Field(const DataVector& v);
-    Field(const DataMap& m);
+    Field(const FieldVector& v);
+    Field(const FieldMap& m);
 
     bool isString() const;
     bool isNumber() const;
@@ -36,8 +36,8 @@ public:
     operator int() const;
     operator long() const;
     operator bool() const;
-    operator DataVector() const;
-    operator DataMap() const;
+    operator FieldVector() const;
+    operator FieldMap() const;
 
     template<typename T>
     std::vector<T> asVectorOf() const;

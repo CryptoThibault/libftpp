@@ -1,5 +1,5 @@
 template <typename T>
-T Factory::create(const std::string& name, const DataMap& map)
+T Factory::create(const std::string& name, const FieldMap& map)
 {
     auto it = _creators.find(name);
     if (it == _creators.end())
@@ -12,19 +12,19 @@ T Factory::create(const std::string& name, const DataMap& map)
 }
 
 template <typename T>
-std::vector<T> Factory::createAll(const std::string& name, const DataVector& vec)
+std::vector<T> Factory::createAll(const std::string& name, const FieldVector& vec)
 {
     std::vector<T> result;
     for (const auto& obj : vec)
     {
-        const DataMap& map = obj;
+        const FieldMap& map = obj;
         result.push_back(create<T>(name, map));
     }
     return result;
 }
 
 template <typename T>
-void Factory::registerCreator(const std::string& name, const std::function<T(const DataMap&)>& creator)
+void Factory::registerCreator(const std::string& name, const std::function<T(const FieldMap&)>& creator)
 {
-    _creators[name] = [creator](const DataMap& map) -> void* { return new T(creator(map)); };
+    _creators[name] = [creator](const FieldMap& map) -> void* { return new T(creator(map)); };
 }

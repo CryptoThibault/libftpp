@@ -4,6 +4,7 @@
 #include <mutex>
 #include <stdexcept>
 #include <functional>
+#include <algorithm>
 
 template <typename T>
 class Registry : public Singleton<Registry<T>>

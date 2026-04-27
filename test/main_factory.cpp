@@ -19,7 +19,7 @@ int main() {
     Factory::instantiate();
     Factory::instance()->registerCreator<Person>(
         "Person",
-        std::function<Person(const DataMap&)>([](const DataMap& m) {
+        std::function<Person(const FieldMap&)>([](const FieldMap& m) {
             return Person(
                 m.at("name"),
                 m.at("age"),
@@ -30,16 +30,16 @@ int main() {
     );
 
     // Load JSON file
-    DataMap data = Loader::load("data.json");
-    DataVector peopleVec = data.at("People");
+    FieldMap data = Loader::load("data.json");
+    FieldVector peopleVec = data.at("People");
 
     // Use Factory to create Person objects from a vector of People
     std::vector<Person> people = Factory::instance()->createAll<Person>("Person", peopleVec);
-    DataMap personMap = {
+    FieldMap personMap = {
         {"name",    Field("eve")},
         {"age",     Field(20)},
         {"active",  Field(false)},
-        {"hobbies", Field(DataVector{ Field("running") })}
+        {"hobbies", Field(FieldVector{ Field("running") })}
     };
     people.push_back(Factory::instance()->create<Person>("Person", personMap));
 

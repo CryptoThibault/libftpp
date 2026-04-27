@@ -22,36 +22,40 @@ HIDE_OUTPUT := $(TEST_DIR)/main_worker_pool.cpp $(TEST_DIR)/main_persistent_work
 VERBOSE ?= 1
 VALGRIND ?= 0
 
-RED = \033[0;31m
-GREEN = \033[0;32m
-BROWN = \033[0;33m
-BLUE = \033[0;34m
-GRAY = \033[0;90m
-RESET = \033[0m
+RED 	= \033[0;31m
+GREEN	= \033[0;32m
+YELLOW  = \033[0;33m
+BLUE 	= \033[0;34m
+MAGENTA = \033[0;35m
+CYAN    = \033[0;36m
+GRAY	= \033[0;37m
+RESET   = \033[0m
 
 all: $(ARCHIVE)
 
 $(ARCHIVE): $(OBJ)
-	$(AR) rcs $(ARCHIVE) $^
+	@printf "$(MAGENTA)[${NAME}] archive $(ARCHIVE)$(RESET)\n"
+	@$(AR) rcs $(ARCHIVE) $^
 
 $(OBJ_DIR)/%.o: $(SRC_DIR)/%.cpp $(DEP)
 	@mkdir -p $(OBJ_DIR)
-	$(CXX) $(CXXFLAGS) -c $< -o $@
+	@printf "$(MAGENTA)[${NAME}] compile $<$(RESET)\n"
+	@$(CXX) $(CXXFLAGS) -c $< -o $@
 
 run: $(ARCHIVE)
 	@name=$(filter-out $@,$(MAKECMDGOALS)); \
 	if [ -z "$$name" ]; then \
-		echo "$(RED)[${NAME}] Usage: make run <test_name>$(RESET)"; \
+		printf "$(RED)[${NAME}] Usage: make run <test_name>$(RESET)\n"; \
 		exit 1; \
 	fi; \
 	src="$(TEST_DIR)/main_$$name.cpp"; \
 	bin="$(TEST_DIR)/main_$$name"; \
 	if [ ! -f "$$src" ]; then \
-		echo "$(RED)[${NAME}] file $$src not found$(RESET)"; \
+		printf "$(RED)[${NAME}] file $$src not found$(RESET)\n"; \
 		exit 1; \
 	fi; \
 	if ! $(CXX) $(CXXFLAGS) "$$src" $(ARCHIVE) -o "$$bin"; then \
-		echo "$(RED)[${NAME}] build $$bin failed$(RESET)"; \
+		printf "$(RED)[${NAME}] build $$bin failed$(RESET)\n"; \
 		exit 1; \
 	fi; \
 	hide=0; \
@@ -75,11 +79,11 @@ test: $(ARCHIVE)
 	@for src in $(TEST_SRC); do \
 		bin="$(TEST_DIR)/$$(basename $$src .cpp)"; \
 		bin_name="$$(basename $$bin)"; \
-		echo "$(BLUE)[${NAME}] build $$bin_name$(RESET)"; \
+		printf "$(BLUE)[${NAME}] build $$bin_name$(RESET)\n"; \
 		if $(CXX) $(CXXFLAGS) "$$src" $(ARCHIVE) -o "$$bin"; then \
-			echo "$(BROWN)[${NAME}] run $$bin_name$(RESET)"; \
+			printf "$(CYAN)[${NAME}] run $$bin_name$(RESET)\n"; \
 			hide=0; \
-			if [ "$(VERBOSE)" -eq 0 ] || echo "$(HIDE_OUTPUT)" | grep -qw "$$bin_name"; then \
+			if [ "$(VERBOSE)" -eq 0 ] || printf "$(HIDE_OUTPUT)" | grep -qw "$$bin_name"; then \
 				hide=1; \
 			fi; \
 			if [ "$(VALGRIND)" = "1" ]; then \
@@ -90,7 +94,7 @@ test: $(ARCHIVE)
 				fi; \
 			else \
 				if [ $$hide -eq 1 ]; then \
-					echo "$(GRAY)[${NAME}] output for $$bin_name hidden$(RESET)"; \
+					printf "$(GRAY)[${NAME}] output for $$bin_name hidden$(RESET)\n"; \
 					"$$bin" > /dev/null 2>&1; \
 				else \
 					"$$bin"; \
@@ -98,23 +102,25 @@ test: $(ARCHIVE)
 			fi; \
 			status=$$?; \
 			if [ $$status -eq 0 ]; then \
-				echo "$(GREEN)[${NAME}] test $$bin_name passed$(RESET)"; \
+				printf "$(GREEN)[${NAME}] test $$bin_name passed$(RESET)\n"; \
 			else \
-				echo "$(RED)[${NAME}] test $$bin_name failed$(RESET)"; \
+				printf "$(RED)[${NAME}] test $$bin_name failed$(RESET)\n"; \
 			fi; \
 		else \
-			echo "$(RED)[${NAME}] build $$bin_name failed$(RESET)"; \
+			printf "$(RED)[${NAME}] build $$bin_name failed$(RESET)\n"; \
 		fi; \
 		rm -f "$$bin" 2>/dev/null; \
-		echo; \
+		printf "\n"; \
 	done
 
 clean:
-	rm -rf $(OBJ_DIR)
+	@printf "$(YELLOW)[${NAME}] clean objects$(RESET)\n"
+	@rm -rf $(OBJ_DIR)
 
 fclean: clean
-	rm -f $(ARCHIVE)
-	rm -f log.txt
+	@printf "$(YELLOW)[${NAME}] remove $(ARCHIVE)$(RESET)\n"
+	@rm -f $(ARCHIVE)
+	@rm -f log.txt
 
 re: fclean all
 
