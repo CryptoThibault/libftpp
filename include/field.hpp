@@ -9,9 +9,10 @@ class Field;
 using FieldVector = std::vector<Field>;
 using FieldMap    = std::map<std::string, Field>;
 
-class Field {
+class Field
+{
 public:
-    using Variant = std::variant<std::string, double, bool, FieldVector, FieldMap>;
+    using Variant = std::variant<std::string, double, bool, std::nullptr_t, FieldVector, FieldMap>;
 
     Field();
     Field(const std::string& s);
@@ -21,12 +22,14 @@ public:
     Field(int n);
     Field(long n);
     Field(bool b);
+    Field(std::nullptr_t);
     Field(const FieldVector& v);
     Field(const FieldMap& m);
 
     bool isString() const;
     bool isNumber() const;
     bool isBool() const;
+    bool isNull() const;
     bool isVector() const;
     bool isMap() const;
 
@@ -36,6 +39,7 @@ public:
     operator int() const;
     operator long() const;
     operator bool() const;
+    operator std::nullptr_t() const;
     operator FieldVector() const;
     operator FieldMap() const;
 

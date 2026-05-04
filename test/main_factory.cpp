@@ -30,7 +30,7 @@ int main() {
     );
 
     // Load JSON file
-    FieldMap data = Loader::load("data.json");
+    FieldMap data = Loader::loadJSON("data.json");
     FieldVector peopleVec = data.at("People");
 
     // Use Factory to create Person objects from a vector of People

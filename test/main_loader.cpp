@@ -3,7 +3,7 @@
 
 int main() {
     // Load the JSON data
-    FieldMap data = Loader::load("data.json");
+    FieldMap data = Loader::loadJSON("data.json");
 
     // Access the "People" array
     const FieldVector& peopleVec = data.at("People");

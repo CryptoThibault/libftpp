@@ -2,12 +2,13 @@
 #include "field.hpp"
 #include <string>
 
-class Loader {
+class Loader
+{
 public:
-    static FieldMap load(const std::string& filepath);
+    static Field loadJSON(const std::string& filepath);
 private:
-    static FieldMap loadMap(const std::string& s, size_t& i);
-    static FieldVector loadVector(const std::string& s, size_t& i);
-    static Field loadField(const std::string& s, size_t& i);
+    static Field load(const std::string& s, size_t& i);
+    static FieldVector loadArray(const std::string& s, size_t& i);
+    static FieldMap loadObject(const std::string& s, size_t& i);
     static void skipWhitespace(const std::string& s, size_t& i);
 };
